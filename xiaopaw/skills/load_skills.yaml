@@ -1,0 +1,54 @@
+# Skill manifest — XiaoPaw v3
+# type: task (Sub-Crew + sandbox) | reference (inject instructions)
+
+pdf:
+  type: task
+  enabled: true
+
+docx:
+  type: task
+  enabled: true
+
+pptx:
+  type: task
+  enabled: true
+
+xlsx:
+  type: task
+  enabled: true
+
+feishu_ops:
+  type: task
+  enabled: true
+
+scheduler_mgr:
+  type: task
+  enabled: true
+
+baidu_search:
+  type: task
+  enabled: true
+
+web_browse:
+  type: task
+  enabled: true
+
+history_reader:
+  type: reference
+  enabled: true
+
+memory-save:
+  type: task
+  enabled: true
+
+skill-creator:
+  type: task
+  enabled: true
+
+memory-governance:
+  type: task
+  enabled: true
+
+search_memory:
+  type: task
+  enabled: true

@@ -1,0 +1,72 @@
+# 观测层（dispatch，fire-and-forget）
+# BEFORE_TOOL_CALL 的观测 handler 在 dispatch_gate 中先于策略 handler 执行，
+# 确保即使被 deny 也能在 Langfuse 中留下记录。
+hooks:
+  BEFORE_TURN:
+    - handler: structured_log.before_turn_handler
+    - handler: langfuse_trace.before_turn_handler
+  BEFORE_LLM:
+    - handler: structured_log.before_llm_handler
+    - handler: langfuse_trace.before_llm_handler
+  BEFORE_TOOL_CALL:
+    - handler: structured_log.before_tool_handler
+    - handler: langfuse_trace.before_tool_handler
+  AFTER_TOOL_CALL:
+    - handler: structured_log.after_tool_handler
+    - handler: langfuse_trace.after_tool_handler
+  AFTER_TURN:
+    - handler: structured_log.after_turn_handler
+    - handler: langfuse_trace.after_turn_handler
+  TASK_COMPLETE:
+    - handler: structured_log.task_complete_handler
+    - handler: langfuse_trace.task_complete_handler
+  SESSION_END:
+    - handler: structured_log.session_end_handler
+    - handler: langfuse_trace.flush_and_close
+
+# 策略层（dispatch_gate，可阻断）
+strategies:
+  - name: audit_logger
+    class: audit_logger.SecurityAuditLogger
+    config: {}
+    hooks:
+      SESSION_END: session_end_handler
+
+  - name: sandbox_guard
+    class: sandbox_guard.SandboxGuard
+    config: {}
+    deps:
+      audit: audit_logger
+    hooks:
+      BEFORE_TOOL_CALL: before_tool_handler
+
+  - name: permission_gate
+    class: permission_gate.PermissionGate
+    config: {}
+    deps:
+      audit: audit_logger
+    hooks:
+      BEFORE_TOOL_CALL: before_tool_handler
+
+  - name: cost_guard
+    class: cost_guard.CostGuard
+    config:
+      budget_usd: 1.0
+    hooks:
+      AFTER_TURN: after_turn_handler
+      BEFORE_TOOL_CALL: before_tool_handler
+
+  - name: loop_detector
+    class: loop_detector.LoopDetector
+    config:
+      threshold: 3
+    hooks:
+      AFTER_TOOL_CALL: after_tool_handler
+      AFTER_TURN: after_turn_handler
+
+  - name: retry_tracker
+    class: retry_tracker.RetryTracker
+    config:
+      max_retries: 5
+    hooks:
+      AFTER_TOOL_CALL: after_tool_handler

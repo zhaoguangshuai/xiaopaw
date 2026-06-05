@@ -1,0 +1,89 @@
+# XiaoPaw v3.0 Configuration Example
+# Copy to config.yaml and fill in your credentials
+
+workspace: "data/workspace"
+data_dir: "data"
+
+feishu:
+  app_id: "${FEISHU_APP_ID}"        # 飞书应用 App ID
+  app_secret: "${FEISHU_APP_SECRET}" # 飞书应用 App Secret
+  allowed_chats: []                  # 允许的群聊 ID（空 = 全部允许）
+
+agent:
+  model: "qwen3-max"
+  max_iter: 50
+  max_input_tokens: 30000
+  sub_agent_model: "qwen3-max"
+  sub_agent_max_iter: 20
+  timeout_s: 300
+  llm_timeout_s: 120
+
+sandbox:
+  url: "http://localhost:8030/mcp"
+  timeout_s: 120
+
+memory:
+  db_dsn: ""  # postgresql://user:pass@localhost:5432/xiaopaw
+  hard_limit_lines: 250
+  max_save_length: 2000
+  compress_threshold: 0.45
+  context_window_tokens: 32000
+
+session:
+  max_active_sessions: 1000
+  max_history_turns: 20
+
+runner:
+  max_queue_size: 10
+  idle_timeout_s: 300
+
+sender:
+  max_retries: 3
+  retry_backoff: [1.0, 2.0, 4.0]
+  max_concurrent: 5
+
+debug:
+  enable_test_api: false  # 仅开发环境启用
+  test_api_host: "127.0.0.1"
+  test_api_port: 9090
+  test_api_token: ""
+
+observability:
+  metrics_host: "0.0.0.0"
+  metrics_port: 8090
+  log_json: true
+  langfuse_host: "http://localhost:3000"
+  langfuse_public_key: ""   # 环境变量: XIAOPAW_LANGFUSE_PUBLIC_KEY（优先）或 LANGFUSE_PUBLIC_KEY
+  langfuse_secret_key: ""   # 环境变量: XIAOPAW_LANGFUSE_SECRET_KEY（优先）或 LANGFUSE_SECRET_KEY
+  enable_langfuse: true     # 环境变量: TRACE_TO_LANGFUSE=true
+
+rate_limit:
+  per_user_per_minute: 20
+
+replay_cache:
+  maxsize: 10000
+  ttl_sec: 300
+
+cron:
+  enabled: true
+  check_interval_s: 30
+  filelock_timeout_s: 10
+  max_dlq_retries: 3
+
+cleanup:
+  enabled: true
+  session_ttl_days: 180
+  trace_ttl_days: 30
+  raw_ttl_days: 30
+  run_hour_utc: 3
+
+feature_flags:
+  token_counter_mode: "rough"
+  enable_skill_timeout: true
+  enable_cron_filelock: true
+  enable_memory_save_filelock: true
+  enable_trace_id: true
+  enable_mcp_whitelist: true
+  enable_memory_save_filter: true
+  enable_webhook_replay_cache: true
+  enable_inbound_rate_limit: true

@@ -1,0 +1,27 @@
+main_task:
+  description: >
+    当前用户消息：
+    {user_message}
+
+    请理解用户意图并完成任务。
+    - 简单问答直接回复
+    - 需要外部能力时使用 skill_loader 调用 Skill
+    - 需要查看历史对话时使用 skill_loader 调用 history_reader
+  expected_output: >
+    JSON 格式，包含以下字段：
+    - reply: 发送给用户的回复内容（中文，友好自然）
+    - used_skills: 本次调用的 Skill 名称列表（可为空列表）
+
+skill_task:
+  description: >
+    执行以下任务：
+    {{task_context}}
+
+    工作目录：{session_dir}
+    请严格按照 Skill 指令执行，将结果文件保存到 {session_dir}/outputs/ 目录。
+  expected_output: >
+    JSON 格式，包含：
+    - errcode: 0 表示成功，非 0 表示失败
+    - message: 结果描述
+    - data: 结构化数据（可选）
+    - files: 生成的文件路径列表（可选）
